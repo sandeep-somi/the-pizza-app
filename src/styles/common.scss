@@ -1,0 +1,15 @@
+.cc-error {
+  margin: 0;
+  font: normal 12px Roboto;
+  margin-top: 8px;
+}
+
+.cc-form-wrapper {
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  .inner-form {
+    width: 100%;
+  }
+}

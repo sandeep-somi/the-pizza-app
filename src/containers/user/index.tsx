@@ -1,7 +1,9 @@
 import Joi, { boolean } from 'joi';
 import React, { ChangeEvent, FormEvent, useReducer } from 'react';
 import { Container, Form, Row, Col, Button } from 'react-bootstrap';
-
+import { useAppDispatch } from '../../hooks/common';
+import store from '../../store';
+import { setUserInfo } from './actions';
 
 interface Errors {
   username?: boolean;
@@ -37,7 +39,7 @@ enum Actions {
 }
 
 function reducer(state: State, action: ActionType) {
-  switch(action.type) {
+  switch (action.type) {
     case Actions.SET_NAME:
       return {
         ...state,
@@ -58,9 +60,11 @@ function reducer(state: State, action: ActionType) {
   }
 }
 
+type keys = 'username' | 'phone'
+
 export default function User() {
   const [state, setState] = useReducer(reducer, initState)
-
+  const dispatch = useAppDispatch();
   const schema = Joi.object({
     username: Joi.string()
       .alphanum()
@@ -68,61 +72,94 @@ export default function User() {
       .max(30)
       .required()
       .messages({
-        'any.required': ErrorTexts.username,
-        'string.min': ErrorTexts.username,
-        'string.max': 'Invalid username',
+        'string.empty': 'Name is required',
+        'string.min': 'Invalid name.',
+        'string.max': 'Invalid name',
       }),
     phone: Joi.string()
       .alphanum()
       .min(8)
       .max(16)
       .messages({
-        'string.required': ErrorTexts.phone
+        'string.empty': 'Phone number is required',
+        'string.min': 'Invalid Phone number',
+        'string.max': 'Invlid Phone number'
       })
   }).options({
     abortEarly: false
   })
 
+  function isValid(): boolean {
+    const errors: Errors = {}
+    const { error } = schema.validate({ username: state.username, phone: state.phone });
+    if (error) {
+      error && error.details.forEach((err: any) => errors[err.context.key as keys] = err.message)
+      setState({
+        type: Actions.SET_ERRORS,
+        payload: errors
+      })
+      return false
+    }
+    return true
+  }
+
   function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    const { error, value } = schema.validate({ username: state.username, phone: state.phone });
-    console.log(error, value, 'validate error state');
+    if (!isValid()) return;
+    dispatch(setUserInfo({
+      username: state.username,
+      phone: state.phone
+    }))
   }
 
   return (
     <Container>
       <Row>
         <Col md={{ span: 4, offset: 4 }}>
-          <div>
-            <Form onSubmit={handleSubmit}>
-              <Form.Group className="mb-3" controlId="name">
-                <Form.Label>Name</Form.Label>
-                <Form.Control
-                  type="text"
-                  placeholder="Name"
-                  value={state.username}
-                  onChange={(e: ChangeEvent<HTMLInputElement>) => setState({
-                    type: Actions.SET_NAME,
-                    payload: e.target.value
-                  })}
-                />
-              </Form.Group>
-              <Form.Group className="mb-3" controlId="phone">
-                <Form.Label>Phone</Form.Label>
-                <Form.Control
-                  type="text"
-                  placeholder="Phone"
-                  value={state.phone}
-                  onChange={(e: ChangeEvent<HTMLInputElement>) => setState({
-                    type: Actions.SET_PHONE,
-                    payload: e.target.value
-                  })}
-                />
-              </Form.Group>
-              <Button variant="primary" type="submit">
-                Submit
-              </Button>
-            </Form>
+          <div className="cc-form-wrapper">
+            <div className="inner-form">
+              <Form onSubmit={handleSubmit}>
+                <Form.Group className="mb-3" controlId="name">
+                  <Form.Label>Name</Form.Label>
+                  <Form.Control
+                    type="text"
+                    placeholder="Name"
+                    value={state.username}
+                    onChange={(e: ChangeEvent<HTMLInputElement>) => setState({
+                      type: Actions.SET_NAME,
+                      payload: e.target.value
+                    })}
+                  />
+                  {state?.errors?.username && <p className="cc-error text-danger">
+                    {state.errors.username}
+                  </p>}
+                </Form.Group>
+                <Form.Group className="mb-3" controlId="phone">
+                  <Form.Label>Phone</Form.Label>
+                  <Form.Control
+                    type="text"
+                    placeholder="Phone"
+                    value={state.phone}
+                    onChange={(e: ChangeEvent<HTMLInputElement>) => {
+                      if ((/^[0-9]{0,16}$/).test(e.target.value)) {
+                        setState({
+                          type: Actions.SET_PHONE,
+                          payload: e.target.value
+                        })
+                      }
+                    }}
+                  />
+                  {state?.errors?.phone && <p className="cc-error text-danger">
+                    {state.errors.phone}
+                  </p>}
+                </Form.Group>
+                <div className="d-grid gap-2">
+                  <Button variant="primary" type="submit" size="sm">
+                    Submit
+                  </Button>
+                </div>
+              </Form>
+            </div>
           </div>
         </Col>
       </Row>
