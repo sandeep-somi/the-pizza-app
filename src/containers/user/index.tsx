@@ -1,6 +1,7 @@
-import Joi, { boolean } from 'joi';
-import React, { ChangeEvent, FormEvent, useReducer } from 'react';
+import Joi from 'joi';
+import { ChangeEvent, FormEvent, useReducer } from 'react';
 import { Container, Form, Row, Col, Button } from 'react-bootstrap';
+import { useHistory } from 'react-router-dom';
 import { useAppDispatch } from '../../hooks/common';
 import store from '../../store';
 import { setUserInfo } from './actions';
@@ -8,11 +9,6 @@ import { setUserInfo } from './actions';
 interface Errors {
   username?: boolean;
   phone?: boolean;
-}
-
-enum ErrorTexts {
-  username = 'Name is required.',
-  phone = 'Phone is required.'
 }
 
 interface State {
@@ -65,6 +61,8 @@ type keys = 'username' | 'phone'
 export default function User() {
   const [state, setState] = useReducer(reducer, initState)
   const dispatch = useAppDispatch();
+  const history = useHistory();
+
   const schema = Joi.object({
     username: Joi.string()
       .alphanum()
@@ -109,7 +107,8 @@ export default function User() {
     dispatch(setUserInfo({
       username: state.username,
       phone: state.phone
-    }))
+    }));
+    history.push("/recipe");
   }
 
   return (
@@ -154,7 +153,7 @@ export default function User() {
                   </p>}
                 </Form.Group>
                 <div className="d-grid gap-2">
-                  <Button variant="primary" type="submit" size="sm">
+                  <Button variant="primary" type="submit">
                     Submit
                   </Button>
                 </div>

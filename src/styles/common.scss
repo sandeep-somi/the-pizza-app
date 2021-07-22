@@ -9,7 +9,102 @@
   display: flex;
   align-items: center;
   justify-content: center;
+
   .inner-form {
     width: 100%;
+  }
+}
+
+.cc-item-card {
+  border: 1px solid color(primary);
+  padding: 64px 8px;
+  text-align: center;
+  border-radius: 6px;
+  margin: 8px 0;
+
+  p {
+    margin: 0;
+    color: color(secondary);
+    user-select: none;
+  }
+
+  h3 {
+    color: color(secondary);
+    user-select: none;
+  }
+
+  &:hover {
+    cursor: pointer;
+    box-shadow: 0px 0px 16px 8px rgba(212, 212, 212, 0.2);
+  }
+
+  &.selected {
+    background-color: color(azure);
+
+    h3,
+    p {
+      color: color(primary);
+    }
+  }
+  &.disabled {
+    box-shadow: none;
+    border: 1px solid color(whisper);
+    h3,
+    p {
+      color: color(whisper);
+    }
+  }
+}
+
+.cc-header {
+  margin: 24px 0;
+
+  h2 {
+    color: color(secondary);
+  }
+}
+
+.cc-checkout-card {
+  .checkout-items {
+    background-color: color(azure);
+    padding: 8px 16px;
+    border: 1px solid color(whisper);
+    border-radius: 6px;
+
+    p {
+      margin: 0;
+      color: color(primary);
+    }
+
+    ul {
+      list-style: none;
+      margin: 0;
+      padding-left: 14px;
+
+      li {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        p {
+          color: color(secondary);
+        }
+      }
+    }
+
+    .totals {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 8px 0px;
+      border-top: 1px dashed color(secondary);
+      margin-top: 8px;
+      border-bottom: 1px dashed color(secondary);
+      margin-bottom: 16px;
+      color: #000;
+      font: 500 16px Roboto;
+      p {
+        color: #000;
+      }
+    }
   }
 }

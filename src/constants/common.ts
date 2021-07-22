@@ -1,5 +1,10 @@
 import { Toppings, Sizes } from "../Types/common";
 
+export type Size = {
+  label: Sizes;
+  price: number;
+}
+
 export const SIZES = [
   {
     label: Sizes.Small,
@@ -14,6 +19,11 @@ export const SIZES = [
     price: 25
   }
 ];
+
+export type Topping = {
+  label: Toppings;
+  price: number;
+}
 
 export const TOPPINGS = [
   {
